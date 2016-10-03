@@ -1,13 +1,16 @@
 package demo.cardviewphpmysql;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,12 +24,15 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, BlankFragment.OnFragmentInteractionListener{
 
     private RecyclerView recyclerView;
     private GridLayoutManager gridLayoutManager;
     private CustomAdapter adapter;
-    private List<MyData> data_list;
+    private ArrayList<MyData> data_list;
+
+    private Integer str;
+
 
 
     @Override
@@ -34,14 +40,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        tx.replace(R.id.content, new BlankFragment());
+        tx.commit();
+    }
+
+    private void cargaTodo(){
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
         data_list  = new ArrayList<>();
-        load_data_from_server(0);
 
         gridLayoutManager = new GridLayoutManager(this,1);
         recyclerView.setLayoutManager(gridLayoutManager);
 
-        adapter = new CustomAdapter(this,data_list);
+        load_data_from_server(0);
+
+        adapter = new CustomAdapter(data_list);
         recyclerView.setAdapter(adapter);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -49,12 +64,13 @@ public class MainActivity extends AppCompatActivity {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
                 if(gridLayoutManager.findLastCompletelyVisibleItemPosition() == data_list.size()-1){
+                    Log.d("Tasando: ",String.valueOf(data_list.get(data_list.size()-1).getId()));
+                    Log.d("Tasando: ",String.valueOf(data_list.size()));
                     load_data_from_server(data_list.get(data_list.size()-1).getId());
                 }
 
             }
         });
-
     }
 
     private void load_data_from_server(final int id) {
@@ -83,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
                             data_list.add(data);
                         }
 
+                        //onCallBack.onSuccess(data_list);
+
 
 
                     } catch (IOException e) {
@@ -104,4 +122,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onClick(View v) {
+
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    public interface CallBack {
+        void onSuccess(ArrayList<MyData> data_list);
+
+        void onFail(String msg);
+    }
 }

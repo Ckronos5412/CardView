@@ -24,8 +24,9 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     private Context context;
     private List<MyData> my_data;
 
-    public CustomAdapter(Context context, List<MyData> my_data) {
-        this.context = context;
+
+    public CustomAdapter(List<MyData> my_data) {
+        //this.context = context;
         this.my_data = my_data;
     }
 
@@ -33,18 +34,22 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card,parent,false);
+        //View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item, parent, false);
 
         return new ViewHolder(itemView);
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
             holder.description.setText(my_data.get(position).getDescription());
-        Glide.with(context).load(my_data.get(position).getImage_link()).into(holder.imageView);
-
-
-
+        //Glide.with(context).load(my_data.get(position).getImage_link()).into(holder.imageView);
+        holder.imageView.setImageResource(R.mipmap.ic_launcher);
     }
 
     @Override
@@ -53,7 +58,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     }
 
 
-    public  class ViewHolder extends  RecyclerView.ViewHolder implements View.OnClickListener{
+    public  class ViewHolder extends  RecyclerView.ViewHolder {
 
         public TextView description;
         public ImageView imageView;
@@ -61,22 +66,10 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         public ViewHolder(View itemView) {
             super(itemView);
 
-            itemView.setOnClickListener(this);
+            //itemView.setOnClickListener(this);
 
             description = (TextView) itemView.findViewById(R.id.description);
             imageView = (ImageView) itemView.findViewById(R.id.image);
-        }
-
-        @Override
-        public void onClick(View v) {
-            TextView textView = (TextView) v.findViewById(R.id.description);
-            String text = textView.getText().toString();
-            Toast toast = Toast.makeText(v.getContext(), text, Toast.LENGTH_LONG);
-            //toast.show();
-
-            Intent intent = new Intent(v.getContext(),Detalle.class);
-            intent.putExtra("descrip",text);
-            v.getContext().startActivity(intent);
         }
     }
 }
